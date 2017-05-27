@@ -2,7 +2,7 @@
 
 Before I create this gem I should check to see if something out there solves the problem just as well or close enough to obviate the need for this.
 
-Searching for [hash_struct](https://rubygems.org/search?utf8=%E2%9C%93&query=hash_struct) on rubygems.
+### Searching for [hash_struct](https://rubygems.org/search?utf8=%E2%9C%93&query=hash_struct) on rubygems.
 
 ## [hash_struct](https://rubygems.org/gems/hash_struct)
 
@@ -30,6 +30,8 @@ For some reason uses a class, but treats it like a module by aliasing `.new`.
 
 ⛔
 
+### Moving on to some logical choices
+
 ## [virtus](https://github.com/solnic/virtus.git)
 
 Large, complex dependency with many superfluous features including type casting.
@@ -51,6 +53,8 @@ Ability to coerce values is super nice and it has a simpler interface than Virtu
 Starring this gem. Solves a different problem than OptStruct intends to solve, but appears to solve it rather well.
 
 ⛔
+
+### Searching for [struct](https://rubygems.org/search?utf8=%E2%9C%93&query=struct) on rubygems.
 
 ## [key_struct](https://github.com/ronen/key_struct)
 
