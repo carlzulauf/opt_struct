@@ -9,17 +9,42 @@ module OptStruct
       attr_reader :options
 
       def initialize(*values, **options)
-        self.class.expected_arguments.each_with_index do |arg, i|
-          send("#{arg}=", values[i])
-        end
         @options = self.class.defaults.merge(options)
-        check_required
+        steal_arguments_from_options
+        assign_arguments(values)
+        check_arguments(values)
+      end
+
+      def fetch(*a, &b)
+        options.fetch(*a, &b)
       end
 
       private
 
-      def check_required
+      def steal_arguments_from_options
+        expected_arguments.each do |arg|
+          send("#{arg}=", options.delete(arg)) if options.key?(arg)
+        end
+      end
 
+      def assign_arguments(values)
+        values.each_with_index do |value, i|
+          send("#{expected_arguments[i]}=", value)
+        end
+      end
+
+      def check_arguments(args)
+        expected = expected_arguments.count
+        actual = expected_arguments.count do |arg|
+          instance_variable_defined?("@#{arg}")
+        end
+        unless actual == expected
+          raise ArgumentError, "only #{actual} of #{expected} required arguments present"
+        end
+      end
+
+      def expected_arguments
+        self.class.expected_arguments
       end
     end
   end
