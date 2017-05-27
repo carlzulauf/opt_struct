@@ -1,4 +1,5 @@
 require "bundler/setup"
+require "pry"
 require "opt_struct"
 
 RSpec.configure do |config|

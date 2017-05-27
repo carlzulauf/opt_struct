@@ -45,7 +45,7 @@ i.bar
 # => "foo"
 i.foo = "foo"
 i.options
-# => {foo: "foo", bar: "foo"}
+# => {foo: "foo", bar: "foo", yin: "yang"}
 ```
 
 ## Example 3

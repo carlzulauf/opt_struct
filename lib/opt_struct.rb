@@ -5,7 +5,7 @@ module OptStruct
     Class.new do
       extend ClassMethods
       expect_arguments *args
-      set_defaults defaults
+      options defaults
       attr_reader :options
 
       def initialize(*values, **options)
@@ -13,6 +13,7 @@ module OptStruct
         steal_arguments_from_options
         assign_arguments(values)
         check_arguments(values)
+        check_required_keys
       end
 
       def fetch(*a, &b)
@@ -43,6 +44,13 @@ module OptStruct
         end
       end
 
+      def check_required_keys
+        missing = self.class.required_keys.select { |key| !options.key?(key) }
+        if missing.any?
+          raise ArgumentError, "missing required keywords: #{missing.inspect}"
+        end
+      end
+
       def expected_arguments
         self.class.expected_arguments
       end
@@ -56,6 +64,20 @@ module OptStruct
   end
 
   module ClassMethods
+    def inherited(subclass)
+      instance_variables.each do |v|
+        subclass.send(:instance_variable_set, v, instance_variable_get(v).dup)
+      end
+    end
+
+    def required_keys
+      @required_keys ||= []
+    end
+
+    def required(*keys)
+      required_keys.concat keys
+      option_accessor *keys
+    end
 
     def option_reader(*keys)
       keys.each do |key|
@@ -65,7 +87,7 @@ module OptStruct
 
     def option_writer(*keys)
       keys.each do |key|
-        define_method("#{key}=") { |value| option[key] = value }
+        define_method("#{key}=") { |value| options[key] = value }
       end
     end
 
@@ -74,13 +96,22 @@ module OptStruct
       option_writer *keys
     end
 
-    def set_defaults(defaults)
-      @defaults = defaults
-      option_accessor *defaults.keys
+    def option(key, default = nil, **options)
+      default = options[:default] if options.key?(:default)
+      defaults[key] = default
+      option_accessor key
+    end
+
+    def options(*keys, **keys_defaults)
+      option_accessor *keys if keys.any?
+      if keys_defaults.any?
+        defaults.merge!(keys_defaults)
+        option_accessor *(keys_defaults.keys - expected_arguments)
+      end
     end
 
     def defaults
-      @defaults || {}
+      @defaults ||= {}
     end
 
     def expect_arguments(*arguments)
@@ -89,7 +120,7 @@ module OptStruct
     end
 
     def expected_arguments
-      @expected_arguments
+      @expected_arguments || []
     end
   end
 end
