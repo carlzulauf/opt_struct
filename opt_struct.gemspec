@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "opt_struct"
-  spec.version       = "0.1.0"
+  spec.version       = "0.2.0"
   spec.authors       = ["Carl Zulauf"]
   spec.email         = ["carl@linkleaf.com"]
 
@@ -9,7 +9,8 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/carlzulauf/opt_struct"
   spec.license       = "MIT"
 
-  spec.files         = ["lib/opt_struct.rb", "README.md"]
+  spec.files         = `git ls-files`.split("\n").grep(/^lib/)
+  spec.files        += %w(README.md opt_struct.gemspec)
   spec.require_paths = ["lib"]
 
   spec.add_development_dependency "bundler", "~> 1.14"
