@@ -19,6 +19,9 @@ MyClass.new
 MyClass.new "foo", "bar"
 # => #<MyClass>
 
+MyClass.new foo: "foo", bar: "bar"
+# => #<MyClass>
+
 i = MyClass.new "foo", "bar", yin: "yang"
 i.options
 # => {yin: "yang"}
