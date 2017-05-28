@@ -1,21 +1,24 @@
 module OptStruct
-  def self.included(klass)
-    klass.instance_exec do
+  def self.inject_struct(target_klass, &more_block)
+    target_klass.instance_exec do
       extend ClassMethods
       attr_reader :options
       include InstanceMethods
     end
+    target_klass.instance_exec(&more_block) if block_given?
+    target_klass
+  end
+
+  def self.included(klass)
+    inject_struct(klass)
   end
 
   def self.new(*args, **defaults)
     check_for_invalid_args(args)
     args.map!(&:to_sym)
-    Class.new do
-      extend ClassMethods
+    inject_struct(Class.new) do
       expect_arguments *args
       options defaults
-      attr_reader :options
-      include InstanceMethods
     end
   end
 
@@ -36,12 +39,9 @@ module OptStruct
 
       def self.included(klass)
         mod = self
-        klass.instance_exec do
-          extend ClassMethods
+        OptStruct.inject_struct(klass) do
           expect_arguments *mod.arguments
           options mod.defaults
-          attr_reader :options
-          include InstanceMethods
         end
       end
     end
