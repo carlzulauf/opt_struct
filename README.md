@@ -2,6 +2,10 @@
 
 A struct around a hash
 
+```ruby
+gem "opt_struct"
+```
+
 ## Example 1
 
 Can work mostly like a regular struct, while accepting options
