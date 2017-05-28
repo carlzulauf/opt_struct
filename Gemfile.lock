@@ -1,16 +1,19 @@
 PATH
   remote: .
   specs:
-    opt_struct (0.1.0)
+    opt_struct (0.2.0)
 
 GEM
   remote: https://rubygems.org/
   specs:
+    activemodel (5.0.3)
+      activesupport (= 5.0.3)
     activesupport (5.0.3)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (~> 0.7)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
+    benchmark-ips (2.6.1)
     byebug (9.0.5)
     coderay (1.1.1)
     concurrent-ruby (1.0.5)
@@ -48,7 +51,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
-  activesupport
+  activemodel
+  benchmark-ips
   bundler (~> 1.14)
   opt_struct!
   pry

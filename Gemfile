@@ -2,6 +2,7 @@ source 'https://rubygems.org'
 
 gem "pry"
 gem "pry-byebug"
-gem "activesupport"
+gem "activemodel"
+gem "benchmark-ips"
 
 gemspec
