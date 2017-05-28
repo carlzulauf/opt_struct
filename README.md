@@ -30,7 +30,7 @@ If an option is required it needs to be called out as such using `required`.
 
 ```ruby
 class MyClass < OptStruct.new(foo: "bar")
-  required :yin
+  required :yin # equivalent to: `option :yin, required: true`
   option :bar, default: "foo"
 end
 
