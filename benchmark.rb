@@ -44,6 +44,13 @@ class PointWithOptStructBuilder
   end
 end
 
+class PointOptStructRequiredKeys < OptStruct.new
+  required :x, :y
+  def distance(point)
+    (x - point.x).abs + (y - point.y).abs
+  end
+end
+
 class PointWithStruct < Struct.new(:x, :y)
   def distance(point)
     (x - point.x).abs + (y - point.y).abs
@@ -66,16 +73,18 @@ class PointWithActiveModel
 end
 
 class PointWithHash
-  def initialize(hash)
+  attr_reader :hash
+
+  def initialize(**hash)
     @hash = hash
   end
 
   def x
-    @hash[:x]
+    hash[:x]
   end
 
   def y
-    @hash[:y]
+    hash[:y]
   end
 
   def distance(point)
@@ -103,6 +112,7 @@ Benchmark.ips do |ips|
     PointWithOptStructClass,
     PointWithOptStructModule,
     PointWithOptStructBuilder,
+    PointOptStructRequiredKeys,
     PointWithHash,
   ].each do |klass|
     ips.report("#{klass}:hash-args") do

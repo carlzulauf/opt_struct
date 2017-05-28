@@ -16,15 +16,27 @@ module OptStruct
     end
 
     def option_reader(*keys)
+      meths = String.new
       keys.each do |key|
-        define_method(key) { options[key] }
+        meths << <<~RUBY
+          def #{key}
+            options[:#{key}]
+          end
+        RUBY
       end
+      self.class_eval meths
     end
 
     def option_writer(*keys)
+      meths = String.new
       keys.each do |key|
-        define_method("#{key}=") { |value| options[key] = value }
+        meths << <<~RUBY
+          def #{key}=(value)
+            options[:#{key}] = value
+          end
+        RUBY
       end
+      self.class_eval meths
     end
 
     def option_accessor(*keys)
@@ -57,13 +69,15 @@ module OptStruct
       attr_accessor *arguments
       lines = []
       arguments.each_with_index do |arg, i|
-        lines << "@#{arg} = options.delete(:#{arg}) if options.key?(:#{arg})"
+        lines << "@#{arg} = @options.delete(:#{arg}) if @options.key?(:#{arg})"
         lines << "@#{arg} = values[#{i}] if values.length > #{i}"
         lines << %[raise ArgumentError, "missing required argument: #{arg}" unless defined?(@#{arg})]
       end
       self.class_eval <<~RUBY
-        def assign_arguments(values)
+        def initialize(*values, **options)
+          @options = self.class.defaults.merge(options)
           #{lines.join("\n  ")}
+          check_required_keys
         end
       RUBY
     end
