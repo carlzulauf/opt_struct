@@ -25,7 +25,9 @@ MyClass.new foo: "foo", bar: "bar"
 i = MyClass.new "foo", "bar", yin: "yang"
 i.options
 # => {yin: "yang"}
-i.fetch(:yin)
+i.yin # getters/settings defined for explicit options
+# => "yang"
+i.fetch(:yin) # can be used to grab explicit options and any other options
 # => "yang"
 ```
 
