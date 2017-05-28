@@ -65,6 +65,24 @@ class PointWithActiveModel
   end
 end
 
+class PointWithHash
+  def initialize(hash)
+    @hash = hash
+  end
+
+  def x
+    @hash[:x]
+  end
+
+  def y
+    @hash[:y]
+  end
+
+  def distance(point)
+    (x - point.x).abs + (y - point.y).abs
+  end
+end
+
 Benchmark.ips do |ips|
   [
     Point,
@@ -85,6 +103,7 @@ Benchmark.ips do |ips|
     PointWithOptStructClass,
     PointWithOptStructModule,
     PointWithOptStructBuilder,
+    PointWithHash,
   ].each do |klass|
     ips.report("#{klass}:hash-args") do
       pos1 = klass.new(x: 2, y: 3)

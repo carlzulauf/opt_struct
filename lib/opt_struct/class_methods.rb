@@ -51,9 +51,21 @@ module OptStruct
       @defaults ||= {}
     end
 
+    # For the record, I don't like this, but it's undeniably faster than alternatives
     def expect_arguments(*arguments)
       @expected_arguments = arguments
       attr_accessor *arguments
+      lines = []
+      arguments.each_with_index do |arg, i|
+        lines << "@#{arg} = options.delete(:#{arg}) if options.key?(:#{arg})"
+        lines << "@#{arg} = values[#{i}] if values.length > #{i}"
+        lines << %[raise ArgumentError, "missing required argument: #{arg}" unless defined?(@#{arg})]
+      end
+      self.class_eval <<~RUBY
+        def assign_arguments(values)
+          #{lines.join("\n  ")}
+        end
+      RUBY
     end
 
     def expected_arguments

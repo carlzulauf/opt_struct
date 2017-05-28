@@ -1,9 +1,11 @@
 describe "OptStruct module usage" do
   context "required keyword" do
+    $breaker = true
     class WithRequiredKeyword
       include OptStruct
       required :foo
     end
+    $breaker = false
 
     it "raises an ArgumentError when missing" do
       expect{ WithRequiredKeyword.new }.to raise_error(ArgumentError)
