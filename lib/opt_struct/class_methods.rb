@@ -67,16 +67,18 @@ module OptStruct
     def expect_arguments(*arguments)
       @expected_arguments = arguments
       attr_accessor *arguments
-      lines = []
+      assignment_lines = String.new
       arguments.each_with_index do |arg, i|
-        lines << "@#{arg} = @options.delete(:#{arg}) if @options.key?(:#{arg})"
-        lines << "@#{arg} = values[#{i}] if values.length > #{i}"
-        lines << %[raise ArgumentError, "missing required argument: #{arg}" unless defined?(@#{arg})]
+        assignment_lines << <<~RUBY
+          @#{arg} = @options.delete(:#{arg}) if @options.key?(:#{arg})
+          @#{arg} = values[#{i}] if values.length > #{i}
+          raise ArgumentError, "missing required argument: #{arg}" unless defined?(@#{arg})
+        RUBY
       end
       self.class_eval <<~RUBY
         def initialize(*values, **options)
           @options = self.class.defaults.merge(options)
-          #{lines.join("\n  ")}
+          #{assignment_lines}
           check_required_keys
         end
       RUBY
