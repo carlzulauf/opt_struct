@@ -19,6 +19,34 @@ module OptStruct
     end
   end
 
+  def self.build(*args, **defaults)
+    check_for_invalid_args(args)
+    args.map!(&:to_sym)
+    Module.new do
+      @arguments = args
+      @defaults = defaults
+
+      def self.arguments
+        @arguments
+      end
+
+      def self.defaults
+        @defaults
+      end
+
+      def self.included(klass)
+        mod = self
+        klass.instance_exec do
+          extend ClassMethods
+          expect_arguments *mod.arguments
+          options mod.defaults
+          attr_reader :options
+          include InstanceMethods
+        end
+      end
+    end
+  end
+
   private
 
   def self.check_for_invalid_args(args)
