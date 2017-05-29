@@ -111,15 +111,17 @@ t.last_name = "Smith"
 t.name
 # => "Trish Smith"
 
-class CarClass
-  include OptStruct.build do
-    required :make, :model
-    options :year, transmission: "Automatic"
+CarModule = OptStruct.build do
+  required :make, :model
+  options :year, transmission: "Automatic"
 
-    def name
-      [year, make, model].compact.join(" ")
-    end
+  def name
+    [year, make, model].compact.join(" ")
   end
+end
+
+class CarClass
+  include CarModule
 end
 
 c = CarClass.new(make: "Infiniti", model: "G37", year: 2012)
