@@ -16,28 +16,32 @@ module OptStruct
     inject_struct(klass)
   end
 
-  def self.new(*args, **defaults)
+  def self.new(*args, **defaults, &callback)
     check_for_invalid_args(args)
     args.map!(&:to_sym)
-    inject_struct(Class.new) do
+    klass = inject_struct(Class.new) do
       expect_arguments *args
       options defaults
     end
+    klass.class_exec(&callback) if callback
+    klass
   end
 
-  def self.build(*args, **defaults)
+  def self.build(*args, **defaults, &callback)
     check_for_invalid_args(args)
     args.map!(&:to_sym)
     Module.new do
       @arguments = args
       @defaults = defaults
+      @callback = callback
 
       def self.included(klass)
-        arguments, defaults = @arguments, @defaults
+        arguments, defaults, callback = @arguments, @defaults, @callback
         OptStruct.inject_struct(klass) do
           expect_arguments *arguments
           options defaults
         end
+        klass.class_exec(&callback) if callback
       end
     end
   end

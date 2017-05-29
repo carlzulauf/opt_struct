@@ -1,6 +1,6 @@
 # The Opt Struct
 
-A struct around a hash
+A struct around a hash. Great for encapsulating actions with complex configuration, like interactor/action classes.
 
 ```ruby
 gem "opt_struct"
@@ -87,4 +87,46 @@ MyClass.new
 i = MyClass.new("something", bar: "foo")
 [i.foo, i.bar]
 # => ["something", "foo"]
+```
+
+## Example 5
+
+Both `build` and `new` accept a block.
+
+```ruby
+PersonClass = OptStruct.new do
+  required :first_name
+  option :last_name
+
+  def name
+    [first_name, last_name].compact.join(" ")
+  end
+end
+
+t = PersonClass.new(first_name: "Trish")
+# => #<PersonClass>
+t.name
+# => "Trish"
+t.last_name = "Smith"
+t.name
+# => "Trish Smith"
+
+class CarClass
+  include OptStruct.build do
+    required :make, :model
+    options :year, transmission: "Automatic"
+
+    def name
+      [year, make, model].compact.join(" ")
+    end
+  end
+end
+
+c = CarClass.new(make: "Infiniti", model: "G37", year: 2012)
+c.name
+# => "2012 Infinit G37"
+
+c = CarClass.new(model: "WRX", make: "Subaru")
+c.name
+# => "Subaru WRX"
 ```
