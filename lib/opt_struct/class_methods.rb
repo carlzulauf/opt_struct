@@ -16,27 +16,15 @@ module OptStruct
     end
 
     def option_reader(*keys)
-      meths = String.new
       keys.each do |key|
-        meths << <<~RUBY
-          def #{key}
-            options[:#{key}]
-          end
-        RUBY
+        define_method(key) { options[key] }
       end
-      self.class_eval meths
     end
 
     def option_writer(*keys)
-      meths = String.new
       keys.each do |key|
-        meths << <<~RUBY
-          def #{key}=(value)
-            options[:#{key}] = value
-          end
-        RUBY
+        define_method("#{key}=") { |value| options[key] = value }
       end
-      self.class_eval meths
     end
 
     def option_accessor(*keys)
@@ -63,29 +51,20 @@ module OptStruct
       @defaults ||= {}
     end
 
-    # For the record, I don't like this, but it's undeniably faster than alternatives
     def expect_arguments(*arguments)
-      @expected_arguments = arguments
-      attr_accessor *arguments
-      assignment_lines = String.new
+      existing = expected_arguments.count
+      expected_arguments.concat(arguments)
+
       arguments.each_with_index do |arg, i|
-        assignment_lines << <<~RUBY
-          @#{arg} = @options.delete(:#{arg}) if @options.key?(:#{arg})
-          @#{arg} = values[#{i}] if values.length > #{i}
-          raise ArgumentError, "missing required argument: #{arg}" unless defined?(@#{arg})
-        RUBY
+        n = i + existing
+        define_method(arg) { @arguments[n] }
+        define_method("#{arg}=") { |value| @arguments[n] = value }
       end
-      self.class_eval <<~RUBY
-        def initialize(*values, **options)
-          @options = self.class.defaults.merge(options)
-          #{assignment_lines}
-          check_required_keys
-        end
-      RUBY
+
     end
 
     def expected_arguments
-      @expected_arguments || []
+      @expected_arguments ||= []
     end
   end
 end
