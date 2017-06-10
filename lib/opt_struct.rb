@@ -2,7 +2,7 @@ require "opt_struct/class_methods"
 require "opt_struct/instance_methods"
 
 module OptStruct
-  def self._paint_struct(target, source, args = [], defaults = {}, &callback)
+  def self._inject_struct(target, source, args = [], defaults = {}, &callback)
     structs = Array(source.instance_variable_get(:@_opt_structs)).dup
     if args.any? || defaults.any? || callback
       structs << [args, defaults, callback]
@@ -24,7 +24,7 @@ module OptStruct
     else
       target.instance_exec do
         def self.included(klass)
-          OptStruct._paint_struct(klass, self)
+          OptStruct._inject_struct(klass, self)
           super(klass)
         end
       end
@@ -33,20 +33,20 @@ module OptStruct
   end
 
   def self.included(klass)
-    _paint_struct(klass, self)
+    _inject_struct(klass, self)
     super(klass)
   end
 
   def self.new(*args, **defaults, &callback)
     check_for_invalid_args(args)
     args.map!(&:to_sym)
-    _paint_struct(Class.new, self, args, defaults, &callback)
+    _inject_struct(Class.new, self, args, defaults, &callback)
   end
 
   def self.build(*args, **defaults, &callback)
     check_for_invalid_args(args)
     args.map!(&:to_sym)
-    _paint_struct(Module.new, self, args, defaults, &callback)
+    _inject_struct(Module.new, self, args, defaults, &callback)
   end
 
   private
