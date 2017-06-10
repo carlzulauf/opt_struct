@@ -2,48 +2,51 @@ require "opt_struct/class_methods"
 require "opt_struct/instance_methods"
 
 module OptStruct
-  def self.inject_struct(target_klass, &more_block)
-    target_klass.instance_exec do
-      extend ClassMethods
-      attr_reader :options
-      include InstanceMethods
+  def self._paint_struct(target, source, args = [], defaults = {}, &callback)
+    structs = Array(source.instance_variable_get(:@_opt_structs)).dup
+    if args.any? || defaults.any? || callback
+      structs << [args, defaults, callback]
     end
-    target_klass.instance_exec(&more_block) if block_given?
-    target_klass
+    target.instance_variable_set(:@_opt_structs, structs)
+    if target.is_a?(Class)
+      target.instance_exec do
+        extend ClassMethods
+        attr_reader :options
+        include InstanceMethods
+      end
+      structs.each do |s_args, s_defaults, s_callback|
+        target.class_exec do
+          expect_arguments *s_args if s_args.any?
+          options s_defaults if s_defaults.any?
+        end
+        target.class_exec(&s_callback) if s_callback
+      end
+    else
+      target.instance_exec do
+        def self.included(klass)
+          OptStruct._paint_struct(klass, self)
+          super(klass)
+        end
+      end
+    end
+    target
   end
 
   def self.included(klass)
-    inject_struct(klass)
+    _paint_struct(klass, self)
+    super(klass)
   end
 
   def self.new(*args, **defaults, &callback)
     check_for_invalid_args(args)
     args.map!(&:to_sym)
-    klass = inject_struct(Class.new) do
-      expect_arguments *args
-      options defaults
-    end
-    klass.class_exec(&callback) if callback
-    klass
+    _paint_struct(Class.new, self, args, defaults, &callback)
   end
 
   def self.build(*args, **defaults, &callback)
     check_for_invalid_args(args)
     args.map!(&:to_sym)
-    Module.new do
-      @arguments = args
-      @defaults = defaults
-      @callback = callback
-
-      def self.included(klass)
-        arguments, defaults, callback = @arguments, @defaults, @callback
-        OptStruct.inject_struct(klass) do
-          expect_arguments *arguments
-          options defaults
-        end
-        klass.class_exec(&callback) if callback
-      end
-    end
+    _paint_struct(Module.new, self, args, defaults, &callback)
   end
 
   private
