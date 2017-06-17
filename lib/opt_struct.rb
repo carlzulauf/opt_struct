@@ -16,11 +16,9 @@ module OptStruct
         include InstanceMethods
       end
       structs.each do |s_args, s_defaults, s_callback|
-        target.class_exec do
-          expect_arguments *s_args if s_args.any?
-          options s_defaults if s_defaults.any?
-        end
-        target.class_exec(&s_callback) if s_callback
+        target.expect_arguments *s_args if s_args.any?
+        target.options s_defaults       if s_defaults.any?
+        target.class_exec(&s_callback)  if s_callback
       end
     else
       target.singleton_class.prepend ModuleMethods
