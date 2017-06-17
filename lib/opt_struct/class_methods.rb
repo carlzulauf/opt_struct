@@ -16,12 +16,16 @@ module OptStruct
     end
 
     def option_reader(*keys)
+      check_reserved_words(keys)
+
       keys.each do |key|
         define_method(key) { options[key] }
       end
     end
 
     def option_writer(*keys)
+      check_reserved_words(keys)
+
       keys.each do |key|
         define_method("#{key}=") { |value| options[key] = value }
       end
@@ -52,6 +56,8 @@ module OptStruct
     end
 
     def expect_arguments(*arguments)
+      check_reserved_words(arguments)
+
       existing = expected_arguments.count
       expected_arguments.concat(arguments)
 
@@ -65,6 +71,18 @@ module OptStruct
 
     def expected_arguments
       @expected_arguments ||= []
+    end
+
+    private
+
+    RESERVED_WORDS = %i(class options fetch check_required_args check_required_keys)
+
+    def check_reserved_words(words)
+      Array(words).each do |word|
+        if RESERVED_WORDS.member?(word)
+          raise ArgumentError, "Use of reserved word is not permitted: #{word.inspect}"
+        end
+      end
     end
   end
 end

@@ -3,6 +3,7 @@ require "opt_struct/module_methods"
 require "opt_struct/instance_methods"
 
 module OptStruct
+
   def self._inject_struct(target, source, args = [], defaults = {}, &callback)
     structs = Array(source.instance_variable_get(:@_opt_structs)).dup
     if args.any? || defaults.any? || callback
@@ -37,20 +38,10 @@ module OptStruct
   end
 
   def self.new(*args, **defaults, &callback)
-    check_for_invalid_args(args)
-    args.map!(&:to_sym)
-    _inject_struct(Class.new, self, args, defaults, &callback)
+    _inject_struct(Class.new, self, args.map(&:to_sym), defaults, &callback)
   end
 
   def self.build(*args, **defaults, &callback)
-    check_for_invalid_args(args)
-    args.map!(&:to_sym)
-    _inject_struct(Module.new, self, args, defaults, &callback)
-  end
-
-  private
-
-  def self.check_for_invalid_args(args)
-
+    _inject_struct(Module.new, self, args.map(&:to_sym), defaults, &callback)
   end
 end
