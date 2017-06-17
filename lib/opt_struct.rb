@@ -1,4 +1,5 @@
 require "opt_struct/class_methods"
+require "opt_struct/module_methods"
 require "opt_struct/instance_methods"
 
 module OptStruct
@@ -22,6 +23,7 @@ module OptStruct
         target.class_exec(&s_callback) if s_callback
       end
     else
+      target.extend ModuleMethods
       target.instance_exec do
         def self.included(klass)
           OptStruct._inject_struct(klass, self)

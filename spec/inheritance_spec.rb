@@ -30,6 +30,7 @@ end
 
 module AmazingConfigBehavior
   include OptStruct.build(:foo, :bar)
+  option :x
 end
 
 class AmazingConfigStruct
@@ -116,8 +117,8 @@ describe "inheritance" do
       a = AmazingConfigStruct.new(1, 2)
       expect([a.foo, a.bar]).to eq([1, 2])
 
-      b = AmazingConfigStruct.new(foo: 1, bar: 2)
-      expect([b.foo, b.bar]).to eq([1, 2])
+      b = AmazingConfigStruct.new(foo: 1, bar: 2, x: 3)
+      expect([b.foo, b.bar, b.x]).to eq([1, 2, 3])
     end
 
     it "has the features defiend in class" do
