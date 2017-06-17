@@ -38,6 +38,11 @@ class AmazingConfigStruct
   options yin: :yang
 end
 
+class AmazingPrependStruct
+  prepend AmazingConfigBehavior
+  options yin: :yang
+end
+
 module BehaviorWithIncluded
   include OptStruct
   options x: 0, y: 0
@@ -133,6 +138,22 @@ describe "inheritance" do
 
   context "module in module" do
     subject { AmazingConfigStruct }
+    it "has the features defined in module" do
+      a = subject.new(1, 2)
+      expect([a.foo, a.bar]).to eq([1, 2])
+
+      b = subject.new(foo: 1, bar: 2, x: 3)
+      expect([b.foo, b.bar, b.x]).to eq([1, 2, 3])
+    end
+
+    it "has the features defiend in class" do
+      a = subject.new(1, 2, yin: 3)
+      expect(a.yin).to eq(3)
+    end
+  end
+
+  context "module in module, prepended" do
+    subject { AmazingPrependStruct }
     it "has the features defined in module" do
       a = subject.new(1, 2)
       expect([a.foo, a.bar]).to eq([1, 2])

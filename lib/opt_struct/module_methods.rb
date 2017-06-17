@@ -6,6 +6,11 @@ module OptStruct
       super(klass)
     end
 
+    def prepended(klass)
+      OptStruct._inject_struct(klass, self)
+      super(klass)
+    end
+
     # These methods are meant to duplicate the macro methods in ClassMethods
     # When they are called in a module the action is deferred by adding a block to the struct chain
     %i(

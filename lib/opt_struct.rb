@@ -33,6 +33,11 @@ module OptStruct
     super(klass)
   end
 
+  def self.prepended(klass)
+    _inject_struct(klass, self)
+    super(klass)
+  end
+
   def self.new(*args, **defaults, &callback)
     check_for_invalid_args(args)
     args.map!(&:to_sym)
