@@ -1,7 +1,13 @@
-# These methods are meant to duplicate the macro methods in ClassMethods
-# When they are called in a module the action is deferred by adding a block to the struct chain
 module OptStruct
   module ModuleMethods
+
+    def included(klass)
+      OptStruct._inject_struct(klass, self)
+      super(klass)
+    end
+
+    # These methods are meant to duplicate the macro methods in ClassMethods
+    # When they are called in a module the action is deferred by adding a block to the struct chain
     %i(
       required
       option_reader

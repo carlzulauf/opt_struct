@@ -23,13 +23,7 @@ module OptStruct
         target.class_exec(&s_callback) if s_callback
       end
     else
-      target.extend ModuleMethods
-      target.instance_exec do
-        def self.included(klass)
-          OptStruct._inject_struct(klass, self)
-          super(klass)
-        end
-      end
+      target.singleton_class.prepend ModuleMethods
     end
     target
   end
