@@ -1,3 +1,5 @@
+require "opt_struct"
+
 describe "OptStruct class usage spec" do
   context "two arguments and defaults" do
     subject do

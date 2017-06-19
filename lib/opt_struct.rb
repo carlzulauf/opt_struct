@@ -22,7 +22,7 @@ module OptStruct
         target.class_exec(&s_callback)  if s_callback
       end
     else
-      target.singleton_class.prepend ModuleMethods
+      target.singleton_class.include ModuleMethods
     end
     target
   end

@@ -1,3 +1,5 @@
+require "opt_struct"
+
 class ParentClassStruct < OptStruct.new
   options :yin, :yang
 end
@@ -38,29 +40,29 @@ class AmazingConfigStruct
   options yin: :yang
 end
 
-class AmazingPrependStruct
-  prepend AmazingConfigBehavior
-  options yin: :yang
-end
+# class AmazingPrependStruct
+#   prepend AmazingConfigBehavior
+#   options yin: :yang
+# end
 
-module BehaviorWithIncluded
-  include OptStruct
-  options x: 0, y: 0
-
-  def self.included(klass)
-    klass.instance_variable_set(:@triggered, true)
-  end
-end
-
-class StructWithIncluded
-  include BehaviorWithIncluded
-
-  options foo: "bar"
-
-  def self.triggered?
-    @triggered
-  end
-end
+# module BehaviorWithIncluded
+#   include OptStruct
+#   options x: 0, y: 0
+#
+#   def self.included(klass)
+#     klass.instance_variable_set(:@triggered, true)
+#   end
+# end
+#
+# class StructWithIncluded
+#   include BehaviorWithIncluded
+#
+#   options foo: "bar"
+#
+#   def self.triggered?
+#     @triggered
+#   end
+# end
 
 describe "inheritance" do
   context "with more options" do
@@ -152,32 +154,32 @@ describe "inheritance" do
     end
   end
 
-  context "module in module, prepended" do
-    subject { AmazingPrependStruct }
-    it "has the features defined in module" do
-      a = subject.new(1, 2)
-      expect([a.foo, a.bar]).to eq([1, 2])
+  # context "module in module, prepended" do
+  #   subject { AmazingPrependStruct }
+  #   it "has the features defined in module" do
+  #     a = subject.new(1, 2)
+  #     expect([a.foo, a.bar]).to eq([1, 2])
+  #
+  #     b = subject.new(foo: 1, bar: 2, x: 3)
+  #     expect([b.foo, b.bar, b.x]).to eq([1, 2, 3])
+  #   end
+  #
+  #   it "has the features defiend in class" do
+  #     a = subject.new(1, 2, yin: 3)
+  #     expect(a.yin).to eq(3)
+  #   end
+  # end
 
-      b = subject.new(foo: 1, bar: 2, x: 3)
-      expect([b.foo, b.bar, b.x]).to eq([1, 2, 3])
-    end
-
-    it "has the features defiend in class" do
-      a = subject.new(1, 2, yin: 3)
-      expect(a.yin).to eq(3)
-    end
-  end
-
-  context "module with included" do
-    subject { StructWithIncluded }
-
-    it "triggers the custom included behavior" do
-      expect(subject.triggered?).to eq(true)
-    end
-
-    it "sets up the defaults correctly" do
-      a = subject.new
-      expect([a.x, a.y, a.foo]).to eq([0,0,"bar"])
-    end
-  end
+  # context "module with included" do
+  #   subject { StructWithIncluded }
+  #
+  #   it "triggers the custom included behavior" do
+  #     expect(subject.triggered?).to eq(true)
+  #   end
+  #
+  #   it "sets up the defaults correctly" do
+  #     a = subject.new
+  #     expect([a.x, a.y, a.foo]).to eq([0,0,"bar"])
+  #   end
+  # end
 end

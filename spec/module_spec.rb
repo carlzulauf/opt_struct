@@ -1,3 +1,5 @@
+require "opt_struct"
+
 describe "OptStruct module usage" do
   context "required keyword" do
     class WithRequiredKeyword

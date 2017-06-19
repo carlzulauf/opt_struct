@@ -1,5 +1,7 @@
+require "opt_struct"
+
 class WeirdNamesStruct < OptStruct.new(:FOO, :"123")
-  options :Capitalized, :cameLized, :"⛔", :end, :for, :-, :"=", :"with space"
+  options :Capitalized, :cameLized, :end, :for, :-, :"=", :"with space" #, :"⛔"
 end
 
 describe "naming" do
@@ -11,7 +13,7 @@ describe "naming" do
     expect(a.send("123")).to eq(456)
     expect(a.Capitalized).to be_nil
     expect(a.cameLized).to be_nil
-    expect(a.⛔).to be_nil
+    # expect(a.⛔).to be_nil
     expect(a.end).to be_nil
     expect(a.for).to be_nil
     expect(a.send("-")).to be_nil
@@ -34,8 +36,8 @@ describe "naming" do
     a.cameLized = true
     expect(a.cameLized).to eq(true)
 
-    a.⛔ = true
-    expect(a.⛔).to eq(true)
+    # a.⛔ = true
+    # expect(a.⛔).to eq(true)
 
     a.end = true
     expect(a.end).to eq(true)

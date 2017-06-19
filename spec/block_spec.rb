@@ -1,3 +1,5 @@
+require "opt_struct"
+
 describe "OptStruct block usage" do
   PersonClass = OptStruct.new do
     required :first_name
