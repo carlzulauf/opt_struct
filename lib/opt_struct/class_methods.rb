@@ -2,7 +2,8 @@ module OptStruct
   module ClassMethods
     def inherited(subclass)
       instance_variables.each do |v|
-        subclass.send(:instance_variable_set, v, instance_variable_get(v).dup)
+        ivar = instance_variable_get(v)
+        subclass.send(:instance_variable_set, v, ivar.dup) if ivar
       end
     end
 
