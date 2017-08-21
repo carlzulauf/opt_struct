@@ -132,7 +132,11 @@ c = CarClass.new(make: "Infiniti", model: "G37", year: 2012)
 c.name
 # => "2012 Infinit G37"
 
-c = CarClass.new(model: "WRX", make: "Subaru")
+c = CarClass.new(model: "WRX", make: "Subaru", year: nil)
 c.name
 # => "Subaru WRX"
+
+c = CarClass.new(model: "BRZ", make: "Subaru")
+c.name
+# => "2017 Subaru BRZ"
 ```
