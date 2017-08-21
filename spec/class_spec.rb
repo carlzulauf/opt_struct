@@ -57,10 +57,6 @@ describe "OptStruct class usage spec" do
       expect(subject.foo).to eq("bar")
     end
 
-    it "requried keys flow through to options along with defaults" do
-      expect(subject.options).to eq(foo: "bar", bar: "foo", yin: "yang")
-    end
-
     it "sets up option accessors for required keys" do
       expect(subject.yin).to eq("yang")
       subject.yin = "foo"

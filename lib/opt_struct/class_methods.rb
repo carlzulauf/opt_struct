@@ -20,7 +20,21 @@ module OptStruct
       check_reserved_words(keys)
 
       keys.each do |key|
-        define_method(key) { options[key] }
+        define_method(key) do
+          if options.key?(key)
+            options[key]
+          else
+            default = defaults[key]
+            case default
+            when Proc
+              instance_exec(&default)
+            when Symbol
+              respond_to?(default) ? send(default) : default
+            else
+              default
+            end
+          end
+        end
       end
     end
 
@@ -76,7 +90,7 @@ module OptStruct
 
     private
 
-    RESERVED_WORDS = %i(class options fetch check_required_args check_required_keys)
+    RESERVED_WORDS = %i(class defaults options fetch check_required_args check_required_keys)
 
     def check_reserved_words(words)
       Array(words).each do |word|

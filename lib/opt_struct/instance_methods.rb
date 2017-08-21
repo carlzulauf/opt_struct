@@ -2,13 +2,17 @@ module OptStruct
   module InstanceMethods
     def initialize(*arguments, **options)
       @arguments = arguments
-      @options = self.class.defaults.merge(options)
+      @options = options
       check_required_args
       check_required_keys
     end
 
     def fetch(*a, &b)
       options.fetch(*a, &b)
+    end
+
+    def defaults
+      self.class.defaults
     end
 
     private
@@ -23,10 +27,13 @@ module OptStruct
     def check_required_args
       self.class.expected_arguments.each_with_index do |arg, i|
         if i >= @arguments.length
-          unless options.key?(arg)
+          if options.key?(arg)
+            @arguments[i] = options.delete(arg)
+          elsif defaults.key?(arg)
+            @arguments[i] = defaults[arg]
+          else
             raise ArgumentError, "missing required argument: #{arg}"
           end
-          @arguments[i] = options.delete(arg)
         end
       end
     end
