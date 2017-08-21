@@ -113,7 +113,11 @@ t.name
 
 CarModule = OptStruct.build do
   required :make, :model
-  options :year, transmission: "Automatic"
+  options year: -> { Date.today.year }, transmission: :default_transmission
+
+  def default_transmission
+    "Automatic"
+  end
 
   def name
     [year, make, model].compact.join(" ")
