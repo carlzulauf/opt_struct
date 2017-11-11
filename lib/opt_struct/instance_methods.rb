@@ -1,19 +1,12 @@
 module OptStruct
   module InstanceMethods
     def initialize(*arguments, **options)
-<<<<<<< 7bf2ea9c4ba18986c7dad3444ca75ef68f2393aa
-      @arguments = arguments
-      @options = options
-      check_required_args
-      check_required_keys
-=======
       with_init_callbacks do
         @arguments = arguments
-        @options = self.class.defaults.merge(options)
+        @options = options
         check_required_args
         check_required_keys
       end
->>>>>>> Add init callbacks
     end
 
     def fetch(*a, &b)
