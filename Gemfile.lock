@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    opt_struct (0.8.2)
+    opt_struct (0.8.3)
 
 GEM
   remote: https://rubygems.org/

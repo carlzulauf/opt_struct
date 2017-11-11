@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name          = "opt_struct"
-  spec.version       = "0.8.2"
+  spec.version       = "0.8.3"
   spec.authors       = ["Carl Zulauf"]
   spec.email         = ["carl@linkleaf.com"]
 
