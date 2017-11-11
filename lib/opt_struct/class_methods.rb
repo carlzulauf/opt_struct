@@ -32,7 +32,7 @@ module OptStruct
               when Symbol
                 respond_to?(default) ? send(default) : default
               else
-                options[key] = default
+                default
               end
           end
         end
