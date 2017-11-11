@@ -1,10 +1,19 @@
 module OptStruct
   module InstanceMethods
     def initialize(*arguments, **options)
+<<<<<<< 7bf2ea9c4ba18986c7dad3444ca75ef68f2393aa
       @arguments = arguments
       @options = options
       check_required_args
       check_required_keys
+=======
+      with_init_callbacks do
+        @arguments = arguments
+        @options = self.class.defaults.merge(options)
+        check_required_args
+        check_required_keys
+      end
+>>>>>>> Add init callbacks
     end
 
     def fetch(*a, &b)
@@ -35,6 +44,40 @@ module OptStruct
             raise ArgumentError, "missing required argument: #{arg}"
           end
         end
+      end
+    end
+
+    def with_init_callbacks(&init_block)
+      callbacks = self.class.all_callbacks
+      return yield if callbacks.nil? || callbacks.empty?
+
+      around, before, after = [:around_init, :before_init, :init].map do |type|
+        callbacks.fetch(type) { [] }
+      end
+
+      if around.any?
+        init = proc { run_befores_and_afters(before, after, &init_block) }
+        init = around.reduce(init) do |chain, callback|
+          proc { run_callback(callback, &chain) }
+        end
+        instance_exec(&init)
+      else
+        run_befores_and_afters(before, after, &init_block)
+      end
+    end
+
+    def run_befores_and_afters(before, after)
+      before.each { |cb| run_callback(cb) }
+      yield
+      after.each { |cb| run_callback(cb) }
+    end
+
+    def run_callback(callback, &to_yield)
+      case callback
+      when Symbol, String
+        send(callback, &to_yield)
+      when Proc
+        instance_exec(to_yield, &callback)
       end
     end
   end

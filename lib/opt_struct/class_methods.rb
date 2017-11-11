@@ -88,6 +88,29 @@ module OptStruct
       @expected_arguments ||= []
     end
 
+    def init(meth = nil, &blk)
+      add_callback(:init, meth || blk)
+    end
+    alias_method :after_init, :init
+
+    def before_init(meth = nil, &blk)
+      add_callback(:before_init, meth || blk)
+    end
+
+    def around_init(meth = nil, &blk)
+      add_callback(:around_init, meth || blk)
+    end
+
+    def add_callback(name, callback)
+      @_callbacks ||= {}
+      @_callbacks[name] ||= []
+      @_callbacks[name] << callback
+    end
+
+    def all_callbacks
+      @_callbacks
+    end
+
     private
 
     RESERVED_WORDS = %i(class defaults options fetch check_required_args check_required_keys)
