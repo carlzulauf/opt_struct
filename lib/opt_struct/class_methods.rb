@@ -27,9 +27,9 @@ module OptStruct
             default = defaults[key]
             case default
             when Proc
-              instance_exec(&default)
+              options[key] = instance_exec(&default)
             when Symbol
-              respond_to?(default) ? send(default) : default
+              options[key] = respond_to?(default) ? send(default) : default
             else
               default
             end

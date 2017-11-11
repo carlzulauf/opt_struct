@@ -69,6 +69,12 @@ describe "OptStruct default values" do
       expect(DefaultProcWithChangingDefault.new.foo).to eq(3)
       expect(DefaultProcWithChangingDefault.new.foo).to eq(4)
     end
+
+    it "evaluates only once per instance" do
+      instance = DefaultProcWithChangingDefault.new
+      value = instance.foo
+      expect(instance.foo).to eq(value)
+    end
   end
 
   describe "using a lambda" do
