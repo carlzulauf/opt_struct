@@ -23,16 +23,17 @@ module OptStruct
         define_method(key) do
           if options.key?(key)
             options[key]
-          else
+          elsif defaults.key?(key)
             default = defaults[key]
-            case default
-            when Proc
-              options[key] = instance_exec(&default)
-            when Symbol
-              options[key] = respond_to?(default) ? send(default) : default
-            else
-              default
-            end
+            options[key] =
+              case default
+              when Proc
+                instance_exec(&default)
+              when Symbol
+                respond_to?(default) ? send(default) : default
+              else
+                options[key] = default
+              end
           end
         end
       end
