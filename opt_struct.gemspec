@@ -1,6 +1,10 @@
+lib = File.expand_path('../lib', __FILE__)
+$LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
+require 'opt_struct/version'
+
 Gem::Specification.new do |spec|
   spec.name          = "opt_struct"
-  spec.version       = "0.8.3"
+  spec.version       = OptStruct::VERSION
   spec.authors       = ["Carl Zulauf"]
   spec.email         = ["carl@linkleaf.com"]
 
