@@ -18,14 +18,13 @@ describe "OptStruct class usage spec" do
       value = subject.new(one: "foo", two: "bar", foo: "oof")
       expect(value.one).to eq("foo")
       expect(value.two).to eq("bar")
-      expect(value.options).to eq(foo: "oof")
+      expect(value.options).to eq(one: "foo", two: "bar", foo: "oof")
     end
 
     it "allows options to be grabbed via fetch" do
       value = subject.new(one: "foo", two: "bar", foo: "oof")
       expect(value.fetch(:foo)).to eq("oof")
       expect{value.fetch(:bar)}.to raise_error(KeyError)
-      expect{value.fetch(:one)}.to raise_error(KeyError)
       expect(value.fetch(:bar, :default)).to eq(:default)
       expect(value.fetch(:bar){:default}).to eq(:default)
     end
