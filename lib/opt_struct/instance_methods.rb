@@ -2,9 +2,8 @@ module OptStruct
   module InstanceMethods
     def initialize(*arguments, **options)
       with_init_callbacks do
-        @arguments = arguments
         @options = options
-        check_required_args
+        assign_arguments(arguments)
         check_required_keys
       end
     end
@@ -25,18 +24,30 @@ module OptStruct
         raise ArgumentError, "missing required keywords: #{missing.inspect}"
       end
     end
-
-    def check_required_args
-      self.class.expected_arguments.each_with_index do |arg, i|
-        if i >= @arguments.length
-          if options.key?(arg)
-            @arguments[i] = options.delete(arg)
-          elsif defaults.key?(arg)
-            @arguments[i] = defaults[arg]
+    
+    def assign_arguments(args)
+      self.class.expected_arguments.map.with_index do |key, i|
+        if args.length > i
+          options[key] = args[i]
+        elsif !options.key?(key)
+          if defaults.key?(key)
+            options[key] = read_default_value(key)
           else
-            raise ArgumentError, "missing required argument: #{arg}"
+            raise ArgumentError, "missing required argument: #{key}"
           end
         end
+      end
+    end
+    
+    def read_default_value(key)
+      default = defaults[key]
+      case default
+      when Proc
+        instance_exec(&default)
+      when Symbol
+        respond_to?(default) ? send(default) : default
+      else
+        default
       end
     end
 

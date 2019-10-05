@@ -24,16 +24,7 @@ module OptStruct
           if options.key?(key)
             options[key]
           elsif defaults.key?(key)
-            default = defaults[key]
-            options[key] =
-              case default
-              when Proc
-                instance_exec(&default)
-              when Symbol
-                respond_to?(default) ? send(default) : default
-              else
-                default
-              end
+            options[key] = read_default_value(key)
           end
         end
       end
@@ -72,17 +63,8 @@ module OptStruct
     end
 
     def expect_arguments(*arguments)
-      check_reserved_words(arguments)
-
-      existing = expected_arguments.count
+      required(*arguments)
       expected_arguments.concat(arguments)
-
-      arguments.each_with_index do |arg, i|
-        n = i + existing
-        define_method(arg) { @arguments[n] }
-        define_method("#{arg}=") { |value| @arguments[n] = value }
-      end
-
     end
 
     def expected_arguments
