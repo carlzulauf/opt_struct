@@ -108,7 +108,7 @@ class AuditLog
 end
 ```
 
-These example results in an `AuditLog` class with identical behavior, but no explicit `Visitable` module.
+These examples result in an `AuditLog` class with identical behavior, but no explicit `Visitable` module.
 
 ```ruby
 class AuditLog
