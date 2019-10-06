@@ -1,6 +1,10 @@
 source 'https://rubygems.org'
 
-gem "pry"
-gem "sdoc"
+group :development, :test do
+  gem "pry"
+  gem "sdoc"
+  gem "rake"
+  gem "rspec"
+end
 
 gemspec
