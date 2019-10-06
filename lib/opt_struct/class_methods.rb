@@ -17,8 +17,6 @@ module OptStruct
     end
 
     def option_reader(*keys)
-      check_reserved_words(keys)
-
       keys.each do |key|
         define_method(key) do
           if options.key?(key)
@@ -31,14 +29,13 @@ module OptStruct
     end
 
     def option_writer(*keys)
-      check_reserved_words(keys)
-
       keys.each do |key|
         define_method("#{key}=") { |value| options[key] = value }
       end
     end
 
     def option_accessor(*keys)
+      check_reserved_words(keys)
       option_reader *keys
       option_writer *keys
     end
