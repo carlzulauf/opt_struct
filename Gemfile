@@ -4,5 +4,6 @@ gem "pry"
 gem "pry-byebug"
 gem "activemodel"
 gem "benchmark-ips"
+gem "sdoc"
 
 gemspec
