@@ -63,6 +63,7 @@ module OptStruct
       required(*arguments)
       expected_arguments.concat(arguments)
     end
+    alias_method :expect_argument, :expect_arguments
 
     def expected_arguments
       @expected_arguments ||= []
