@@ -153,7 +153,7 @@ end
 Passing a Hash to `.new` or `.build` is equivalent to passing the same hash to `options`
 
 ```ruby
-User < OptStruct.new(email: nil, role: "member")
+User = OptStruct.new(email: nil, role: "member")
 ```
 
 Default blocks can also be used and are late evaluated on the each struct instance.
