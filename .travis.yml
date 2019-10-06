@@ -3,8 +3,6 @@ rvm:
   - 2.4.5
   - 2.5.3
   - 2.6.5
-  - jruby
   - truffleruby
-  - rbx-4
 before_install:
   - gem install -N bundler -v 2.0.2
