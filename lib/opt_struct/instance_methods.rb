@@ -4,6 +4,7 @@ module OptStruct
       with_init_callbacks do
         @options = options
         assign_arguments(arguments)
+        assign_defaults
         check_required_keys
       end
     end
@@ -24,23 +25,21 @@ module OptStruct
         raise ArgumentError, "missing required keywords: #{missing.inspect}"
       end
     end
-    
-    def assign_arguments(args)
-      self.class.expected_arguments.map.with_index do |key, i|
-        if args.length > i
-          options[key] = args[i]
-        elsif !options.key?(key)
-          if defaults.key?(key)
-            options[key] = read_default_value(key)
-          else
-            raise ArgumentError, "missing required argument: #{key}"
-          end
-        end
+
+    def assign_defaults
+      defaults.each do |key, default_value|
+        next if options.key?(key) # || default_value.nil?
+        options[key] = read_default_value(default_value)
       end
     end
-    
-    def read_default_value(key)
-      default = defaults[key]
+
+    def assign_arguments(args)
+      self.class.expected_arguments.map.with_index do |key, i|
+        options[key] = args[i] if args.length > i
+      end
+    end
+
+    def read_default_value(default)
       case default
       when Proc
         instance_exec(&default)

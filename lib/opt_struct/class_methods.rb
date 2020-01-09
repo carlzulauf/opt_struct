@@ -18,13 +18,7 @@ module OptStruct
 
     def option_reader(*keys)
       keys.each do |key|
-        define_method(key) do
-          if options.key?(key)
-            options[key]
-          elsif defaults.key?(key)
-            options[key] = read_default_value(key)
-          end
-        end
+        define_method(key) { options[key] }
       end
     end
 
