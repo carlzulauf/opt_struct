@@ -11,9 +11,12 @@ module OptStruct
       @required_keys ||= []
     end
 
-    def required(*keys)
+    # Options passed to `required` will apply to all keys
+    def required(*keys, **options)
       required_keys.concat keys
-      option_accessor *keys
+      keys.each do |key|
+        option key, nil, **options
+      end
     end
 
     def option_reader(*keys)
@@ -39,6 +42,7 @@ module OptStruct
       defaults[key] = default
       required_keys << key if options[:required]
       option_accessor key
+      privatize_accessor(key) if options[:private]
     end
 
     def options(*keys, **keys_defaults)
@@ -47,6 +51,11 @@ module OptStruct
         defaults.merge!(keys_defaults)
         option_accessor *(keys_defaults.keys - expected_arguments)
       end
+    end
+
+    def privatize_accessor(key)
+      private key
+      private "#{key}="
     end
 
     def defaults
