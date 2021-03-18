@@ -1,30 +1,46 @@
 module OptStruct
   module ClassMethods
     def inherited(subclass)
-      instance_variables.each do |v|
-        ivar = instance_variable_get(v)
-        subclass.send(:instance_variable_set, v, ivar.dup) if ivar
+      opt_struct_class_constants.each do |c|
+        subclass.const_set(c, const_get(c)) if const_defined?(c)
       end
     end
 
+    def opt_struct_class_constants
+      [:OPT_DEFAULTS, :OPT_CALLBACKS]
+    end
+
     def required_keys
-      @required_keys ||= []
+      [].freeze
     end
 
     def required(*keys)
-      required_keys.concat keys
+      combined = required_keys + keys
+      class_eval <<~EVAL
+        def self.required_keys
+          #{combined.inspect}.freeze
+        end
+      EVAL
       option_accessor *keys
     end
 
     def option_reader(*keys)
       keys.each do |key|
-        define_method(key) { options[key] }
+        class_eval <<~EVAL
+          def #{key}
+            options[:#{key}]
+          end
+        EVAL
       end
     end
 
     def option_writer(*keys)
       keys.each do |key|
-        define_method("#{key}=") { |value| options[key] = value }
+        class_eval <<~EVAL
+          def #{key}=(value)
+            options[:#{key}] = value
+          end
+        EVAL
       end
     end
 
@@ -36,32 +52,44 @@ module OptStruct
 
     def option(key, default = nil, **options)
       default = options[:default] if options.key?(:default)
-      defaults[key] = default
-      required_keys << key if options[:required]
+      add_defaults key => default
+      required key if options[:required]
       option_accessor key
     end
 
     def options(*keys, **keys_defaults)
       option_accessor *keys if keys.any?
       if keys_defaults.any?
-        defaults.merge!(keys_defaults)
+        add_defaults keys_defaults
         option_accessor *(keys_defaults.keys - expected_arguments)
       end
     end
 
+    def add_defaults(defaults_to_add)
+      freezer = defaults.dup
+      defaults_to_add.each { |k, v| freezer[k] = v.freeze }
+      remove_const(:OPT_DEFAULTS) if const_defined?(:OPT_DEFAULTS)
+      const_set(:OPT_DEFAULTS, freezer.freeze)
+    end
+
     def defaults
-      @defaults ||= {}
+      const_defined?(:OPT_DEFAULTS) ? const_get(:OPT_DEFAULTS) : {}
+    end
+
+    def expected_arguments
+      [].freeze
     end
 
     def expect_arguments(*arguments)
       required(*arguments)
-      expected_arguments.concat(arguments)
+      combined = expected_arguments + arguments
+      class_eval <<~EVAL
+        def self.expected_arguments
+          #{combined.inspect}.freeze
+        end
+      EVAL
     end
     alias_method :expect_argument, :expect_arguments
-
-    def expected_arguments
-      @expected_arguments ||= []
-    end
 
     def init(meth = nil, &blk)
       add_callback(:init, meth || blk)
@@ -77,18 +105,23 @@ module OptStruct
     end
 
     def add_callback(name, callback)
-      @_callbacks ||= {}
-      @_callbacks[name] ||= []
-      @_callbacks[name] << callback
+      if const_defined?(:OPT_CALLBACKS)
+        callbacks_for_name = (all_callbacks[name] || []) + [callback]
+        callbacks_hash = all_callbacks.merge(name => callbacks_for_name).freeze
+        remove_const(:OPT_CALLBACKS)
+        const_set(:OPT_CALLBACKS, callbacks_hash)
+      else
+        const_set(:OPT_CALLBACKS, { name => [ callback ] })
+      end
     end
 
     def all_callbacks
-      @_callbacks
+      const_defined?(:OPT_CALLBACKS) ? const_get(:OPT_CALLBACKS) : {}.freeze
     end
 
     private
 
-    RESERVED_WORDS = %i(class defaults options fetch check_required_args check_required_keys)
+    RESERVED_WORDS = %i(class defaults options fetch check_required_args check_required_keys).freeze
 
     def check_reserved_words(words)
       Array(words).each do |word|
