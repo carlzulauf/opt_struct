@@ -6,41 +6,33 @@ module OptStruct
       end
     end
 
-    def opt_struct_class_constants
-      [:OPT_DEFAULTS, :OPT_CALLBACKS]
-    end
-
+    # overwritten if `required` is called
     def required_keys
       [].freeze
     end
 
     def required(*keys)
-      combined = required_keys + keys
-      class_eval <<~EVAL
-        def self.required_keys
-          #{combined.inspect}.freeze
-        end
-      EVAL
+      add_required_keys *keys
       option_accessor *keys
     end
 
     def option_reader(*keys)
       keys.each do |key|
-        class_eval <<~EVAL
+        class_eval <<~RUBY
           def #{key}
             options[:#{key}]
           end
-        EVAL
+        RUBY
       end
     end
 
     def option_writer(*keys)
       keys.each do |key|
-        class_eval <<~EVAL
+        class_eval <<~RUBY
           def #{key}=(value)
             options[:#{key}] = value
           end
-        EVAL
+        RUBY
       end
     end
 
@@ -65,17 +57,11 @@ module OptStruct
       end
     end
 
-    def add_defaults(defaults_to_add)
-      freezer = defaults.dup
-      defaults_to_add.each { |k, v| freezer[k] = v.freeze }
-      remove_const(:OPT_DEFAULTS) if const_defined?(:OPT_DEFAULTS)
-      const_set(:OPT_DEFAULTS, freezer.freeze)
-    end
-
     def defaults
       const_defined?(:OPT_DEFAULTS) ? const_get(:OPT_DEFAULTS) : {}
     end
 
+    # overwritten if `expect_arguments` is called
     def expected_arguments
       [].freeze
     end
@@ -104,6 +90,32 @@ module OptStruct
       add_callback(:around_init, meth || blk)
     end
 
+    def all_callbacks
+      const_defined?(:OPT_CALLBACKS) ? const_get(:OPT_CALLBACKS) : {}.freeze
+    end
+
+    private
+
+    def share(value)
+      defined?(Ractor) ? Ractor.make_shareable(value) : value
+    end
+
+    def add_required_keys(*keys)
+      combined = required_keys + keys
+      class_eval <<~RUBY
+        def self.required_keys
+          #{combined.inspect}.freeze
+        end
+      RUBY
+    end
+
+    def add_defaults(defaults_to_add)
+      freezer = defaults.dup
+      defaults_to_add.each { |k, v| freezer[k] = share(v) }
+      remove_const(:OPT_DEFAULTS) if const_defined?(:OPT_DEFAULTS)
+      const_set(:OPT_DEFAULTS, freezer.freeze)
+    end
+
     def add_callback(name, callback)
       if const_defined?(:OPT_CALLBACKS)
         callbacks_for_name = (all_callbacks[name] || []) + [callback]
@@ -115,17 +127,13 @@ module OptStruct
       end
     end
 
-    def all_callbacks
-      const_defined?(:OPT_CALLBACKS) ? const_get(:OPT_CALLBACKS) : {}.freeze
+    def opt_struct_class_constants
+      [:OPT_DEFAULTS, :OPT_CALLBACKS]
     end
-
-    private
-
-    RESERVED_WORDS = %i(class defaults options fetch check_required_args check_required_keys).freeze
 
     def check_reserved_words(words)
       Array(words).each do |word|
-        if RESERVED_WORDS.member?(word)
+        if OptStruct::RESERVED_WORDS.member?(word)
           raise ArgumentError, "Use of reserved word is not permitted: #{word.inspect}"
         end
       end
