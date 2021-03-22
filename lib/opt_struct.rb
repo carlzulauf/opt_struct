@@ -3,6 +3,7 @@ require "opt_struct/module_methods"
 require "opt_struct/instance_methods"
 
 module OptStruct
+  RESERVED_WORDS = %i(class defaults options fetch check_required_args check_required_keys).freeze
 
   def self._inject_struct(target, source, args = [], **defaults, &callback)
     structs = Array(source.instance_variable_get(:@_opt_structs)).dup
