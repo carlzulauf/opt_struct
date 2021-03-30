@@ -1,6 +1,7 @@
 # Spec for confirming compatibility with ruby 3.0+'s Ractor concurrency model
 
-class RactorableStruct < OptStruct.new(:positional1, param1: "default1")
+class RactorableStruct < OptStruct.new(:positional1, param1: "default1".freeze)
+  shareable!
   required :required1
   option :param2
   option :param3, default: -> { "default3" }
@@ -13,6 +14,7 @@ end
 
 class RactorBuilder
   include OptStruct.build(:foo, bar: nil)
+  shareable!
   option :yin, default: -> { "yang" }
 
   def cat
@@ -21,6 +23,7 @@ class RactorBuilder
 end
 
 RactorBlock = OptStruct.new do
+  shareable!
   required :attr1
   option :attr2, default: -> { "block" }
   options attr3: "is", attr4: "working"
@@ -28,6 +31,7 @@ RactorBlock = OptStruct.new do
   def cat
     [attr1, attr2, attr3, attr4].join(",")
   end
+
 end
 
 # only run if Ractor support is detected
@@ -63,6 +67,18 @@ if defined?(Ractor)
 
     it "allows block-based struct to be initialized within a ractor" do
       expect(block_ractor.take).to eq("ractor,block,is,working")
+    end
+
+    it "allows struct to be initialized within multiple ractors" do
+      ractors = [
+        Ractor.new { Ractor.yield RactorBlock.new(attr1: "ractor1", attr2: "multi-use").cat },
+        Ractor.new { Ractor.yield RactorBlock.new(attr1: "ractor2", attr2: "multi-use").cat },
+      ]
+
+      expect(ractors.map(&:take)).to eq([
+        "ractor1,multi-use,is,working",
+        "ractor2,multi-use,is,working"
+      ])
     end
   end
 end

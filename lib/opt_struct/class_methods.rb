@@ -94,9 +94,19 @@ module OptStruct
       const_defined?(:OPT_CALLBACKS) ? const_get(:OPT_CALLBACKS) : {}.freeze
     end
 
+    def shareable?
+      const_defined?(:SHAREABLE) && const_get(:SHAREABLE)
+    end
+
+    def shareable!
+      return if shareable?
+      const_set(:SHAREABLE, true)
+    end
+
     private
 
     def share(value)
+      return value unless shareable?
       defined?(Ractor) ? Ractor.make_shareable(value) : value
     end
 
