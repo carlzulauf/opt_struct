@@ -2,6 +2,7 @@ describe "OptStruct block usage" do
   PersonClass = OptStruct.new do
     required :first_name
     option :last_name
+    option :ssn, private: true, required: true
 
     attr_reader :age
 
@@ -11,6 +12,10 @@ describe "OptStruct block usage" do
 
     def name
       [first_name, last_name].compact.join(" ")
+    end
+
+    def last_four
+      ssn.scan(/\d/).last(4).join
     end
   end
 
@@ -54,21 +59,30 @@ describe "OptStruct block usage" do
   end
 
   describe "with .new" do
-    subject { PersonClass }
+    describe ".new" do
+      subject { PersonClass }
 
-    it "throws error when required keys missing" do
-      expect{ subject.new }.to raise_error(ArgumentError)
+      it "throws error when required keys missing" do
+        expect{ subject.new }.to raise_error(ArgumentError)
+      end
+
+      it "allows initialization when required keys are satisfied" do
+        value = subject.new(first_name: "Trish", ssn: "123-45-6789")
+        expect(value).to be_a(subject)
+      end
     end
 
-    it "adds block methods to instance methods" do
-      value = subject.new(first_name: "Trish")
-      expect(value.name).to eq("Trish")
-      value.last_name = "Smith"
-      expect(value.name).to eq("Trish Smith")
-    end
+    describe "instance" do
+      subject { PersonClass.new(first_name: "Trish", last_name: "Smith", ssn: "123-45-6789") }
 
-    it "executes the init block if present" do
-      expect(subject.new(first_name: "Baby").age).to eq(0)
+      it "contains methods defined in block" do
+        expect(subject.name).to eq("Trish Smith")
+        expect(subject.last_four).to eq("6789")
+      end
+
+      it "executes the init block" do
+        expect(subject.age).to eq(0)
+      end
     end
   end
 

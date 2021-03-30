@@ -11,42 +11,42 @@ module OptStruct
       [].freeze
     end
 
-    def required(*keys)
+    def required(*keys, **options)
       add_required_keys *keys
-      option_accessor *keys
+      option_accessor *keys, **options
     end
 
-    def option_reader(*keys)
+    def option_reader(*keys, **options)
       keys.each do |key|
         class_eval <<~RUBY
-          def #{key}
+          #{options[:private] ? "private" : ""} def #{key}
             options[:#{key}]
           end
         RUBY
       end
     end
 
-    def option_writer(*keys)
+    def option_writer(*keys, **options)
       keys.each do |key|
         class_eval <<~RUBY
-          def #{key}=(value)
+          #{options[:private] ? "private" : ""} def #{key}=(value)
             options[:#{key}] = value
           end
         RUBY
       end
     end
 
-    def option_accessor(*keys)
+    def option_accessor(*keys, **options)
       check_reserved_words(keys)
-      option_reader *keys
-      option_writer *keys
+      option_reader *keys, **options
+      option_writer *keys, **options
     end
 
-    def option(key, default = nil, **options)
+    def option(key, default = nil, required: false, **options)
       default = options[:default] if options.key?(:default)
       add_defaults key => default
-      required key if options[:required]
-      option_accessor key
+      add_required_keys key if required
+      option_accessor key, **options
     end
 
     def options(*keys, **keys_defaults)
