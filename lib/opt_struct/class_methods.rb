@@ -43,8 +43,8 @@ module OptStruct
     end
 
     def option(key, default = nil, required: false, **options)
-      default = options[:default] if options.key?(:default)
-      add_defaults key => default
+      default ||= options[:default]
+      add_defaults key => default if default || options.key?(:default)
       add_required_keys key if required
       option_accessor key, **options
     end

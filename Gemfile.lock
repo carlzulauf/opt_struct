@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    opt_struct (1.1.0)
+    opt_struct (1.2.0)
 
 GEM
   remote: https://rubygems.org/
@@ -41,4 +41,4 @@ DEPENDENCIES
   sdoc
 
 BUNDLED WITH
-   2.0.2
+   2.2.3

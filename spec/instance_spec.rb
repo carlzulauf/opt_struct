@@ -1,6 +1,6 @@
 describe "OptStruct instance methods usage" do
   InstanceableClass = OptStruct.new(:arity_arg) do
-    required :required_arg
+    option :required_arg, required: true
     option :optional_arg
 
     option :private_arg, private: true, default: "yas"
@@ -61,6 +61,14 @@ describe "OptStruct instance methods usage" do
 
     it "allows use of #options.fetch to safely access optional arguments" do
       expect(subject.optional_up).to eq("YAOA")
+    end
+  end
+
+  context "with required option missing" do
+    subject { InstanceableClass.new(arity_arg: 1, private_required_arg: 1) }
+
+    it "raises an ArgumentError" do
+      expect { subject }.to raise_error(ArgumentError)
     end
   end
 end
