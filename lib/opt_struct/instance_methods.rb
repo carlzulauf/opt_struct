@@ -28,7 +28,7 @@ module OptStruct
 
     def assign_defaults
       defaults.each do |key, default_value|
-        next if options.key?(key) # || default_value.nil?
+        next if options.key?(key)
         options[key] = read_default_value(default_value)
       end
     end
