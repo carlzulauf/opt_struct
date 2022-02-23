@@ -44,6 +44,18 @@ class DefaultProcWithChangingDefault < OptStruct.new
   end
 end
 
+class OptionsWithNilDefaults < OptStruct.new
+  option :implicit_nil
+  option :explicit_nil, nil
+  option :nil_block, -> { nil }
+  option :nil_method, :returns_nil
+  options :opt_list1, :opt_list2, opt_list_nil: nil
+
+  def returns_nil
+    nil
+  end
+end
+
 describe "OptStruct default values" do
   describe "using a symbol" do
     it "defaults to method return value when method exists" do
@@ -54,6 +66,13 @@ describe "OptStruct default values" do
     it "defaults to symbol if method does not exist" do
       expect(DefaultSymbolMethodDoesNotExist.new.foo).to eq(:bar)
       expect(DefaultSymbolMethodDoesNotExist.new.options[:foo]).to eq(:bar)
+    end
+
+    context "matching a method with nil return value" do
+      it "initializes the option with a nil value" do
+        expect(OptionsWithNilDefaults.new.nil_method).to eq(nil)
+        expect(OptionsWithNilDefaults.new.options.key?(:nil_method)).to eq(true)
+      end
     end
   end
 
@@ -81,6 +100,13 @@ describe "OptStruct default values" do
       expect(instance.fetch(:foo)).to eq(value)
       expect(instance.options[:foo]).to eq(value)
     end
+
+    context "with a nil return value" do
+      it "initializes the option with nil" do
+        expect(OptionsWithNilDefaults.new.nil_block).to eq(nil)
+        expect(OptionsWithNilDefaults.new.options.key?(:nil_block)).to eq(true)
+      end
+    end
   end
 
   describe "using a lambda" do
@@ -99,6 +125,40 @@ describe "OptStruct default values" do
     it "evaluates a method via symbol" do
       expect(DefaultProcAndSymbolUsingOptions.new.foo).to eq("test")
       expect(DefaultProcAndSymbolUsingOptions.new.options[:foo]).to eq("test")
+    end
+
+    it "initializes values with nil defaults" do
+      expect(OptionsWithNilDefaults.new.opt_list_nil).to eq(nil)
+      expect(OptionsWithNilDefaults.new.options.key?(:opt_list_nil)).to eq(true)
+    end
+
+    it "does not initialize values with no default provided" do
+      expect(OptionsWithNilDefaults.new.opt_list1).to eq(nil)
+      expect(OptionsWithNilDefaults.new.opt_list2).to eq(nil)
+      expect(OptionsWithNilDefaults.new.options.key?(:opt_list1)).to eq(false)
+      expect(OptionsWithNilDefaults.new.options.key?(:opt_list2)).to eq(false)
+    end
+  end
+
+  describe "using option syntax" do
+    context "with no explicit default" do
+      it "returns nil from option accessor" do
+        expect(OptionsWithNilDefaults.new.implicit_nil).to eq(nil)
+      end
+
+      it "does not initialize the option in the options hash" do
+        expect(OptionsWithNilDefaults.new.options.key?(:implicit_nil)).to eq(false)
+      end
+    end
+
+    context "with explicit default nil as second argument" do
+      it "returns nil from the option accessor" do
+        expect(OptionsWithNilDefaults.new.explicit_nil).to eq(nil)
+      end
+
+      it "initializes the option in the options hash" do
+        expect(OptionsWithNilDefaults.new.options.key?(:explicit_nil)).to eq(true)
+      end
     end
   end
 end
