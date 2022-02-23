@@ -37,9 +37,9 @@ module OptStruct
       option_writer *keys, **options
     end
 
-    def option(key, default = nil, required: false, **options)
+    def option(key, default = OptStruct::DEFAULT, required: false, **options)
       default = options[:default] if options.key?(:default)
-      defaults[key] = default if default
+      defaults[key] = default unless default == OptStruct::DEFAULT
       required_keys << key if required
       option_accessor key, **options
     end
@@ -91,11 +91,9 @@ module OptStruct
 
     private
 
-    RESERVED_WORDS = %i(class defaults options fetch check_required_args check_required_keys)
-
     def check_reserved_words(words)
       Array(words).each do |word|
-        if RESERVED_WORDS.member?(word)
+        if OptStruct::RESERVED_WORDS.member?(word)
           raise ArgumentError, "Use of reserved word is not permitted: #{word.inspect}"
         end
       end
