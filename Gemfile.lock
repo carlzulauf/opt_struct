@@ -14,20 +14,20 @@ GEM
       method_source (~> 1.0)
     rake (13.0.6)
     rdoc (6.3.3)
-    rspec (3.10.0)
-      rspec-core (~> 3.10.0)
-      rspec-expectations (~> 3.10.0)
-      rspec-mocks (~> 3.10.0)
-    rspec-core (3.10.1)
-      rspec-support (~> 3.10.0)
-    rspec-expectations (3.10.2)
+    rspec (3.11.0)
+      rspec-core (~> 3.11.0)
+      rspec-expectations (~> 3.11.0)
+      rspec-mocks (~> 3.11.0)
+    rspec-core (3.11.0)
+      rspec-support (~> 3.11.0)
+    rspec-expectations (3.11.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.10.0)
-    rspec-mocks (3.10.2)
+      rspec-support (~> 3.11.0)
+    rspec-mocks (3.11.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.10.0)
-    rspec-support (3.10.3)
-    sdoc (2.3.0)
+      rspec-support (~> 3.11.0)
+    rspec-support (3.11.0)
+    sdoc (2.3.1)
       rdoc (>= 5.0, < 6.4.0)
 
 PLATFORMS
@@ -41,4 +41,4 @@ DEPENDENCIES
   sdoc
 
 BUNDLED WITH
-   2.3.3
+   2.3.7
