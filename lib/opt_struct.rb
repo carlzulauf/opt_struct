@@ -3,7 +3,13 @@ require "opt_struct/module_methods"
 require "opt_struct/instance_methods"
 
 module OptStruct
-  RESERVED_WORDS = %i(class defaults options fetch check_required_args check_required_keys).freeze
+
+  RESERVED_WORDS = [
+    :class, :options,
+    *OptStruct::InstanceMethods.instance_methods,
+    *OptStruct::InstanceMethods.protected_instance_methods,
+    *OptStruct::InstanceMethods.private_instance_methods,
+  ].freeze
 
   # Default value object allows us to distinguish unspecified defaults from nil
   DEFAULT = Object.new
