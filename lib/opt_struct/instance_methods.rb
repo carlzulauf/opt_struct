@@ -29,24 +29,21 @@ module OptStruct
     def assign_defaults
       defaults.each do |key, default_value|
         next if options.key?(key)
-        options[key] = read_default_value(default_value)
+        options[key] =
+          case default_value
+          when Proc
+            instance_exec(&default_value)
+          when Symbol
+            respond_to?(default_value) ? send(default_value) : default_value
+          else
+            default_value
+          end
       end
     end
 
     def assign_arguments(args)
-      self.class.expected_arguments.map.with_index do |key, i|
+      self.class.expected_arguments.each_with_index do |key, i|
         options[key] = args[i] if args.length > i
-      end
-    end
-
-    def read_default_value(default)
-      case default
-      when Proc
-        instance_exec(&default)
-      when Symbol
-        respond_to?(default) ? send(default) : default
-      else
-        default
       end
     end
 
