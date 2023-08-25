@@ -7,8 +7,20 @@ module OptStruct
       end
     end
 
+    def defined_keys
+      @defined_keys ||= []
+    end
+
     def required_keys
       @required_keys ||= []
+    end
+
+    def expected_arguments
+      @expected_arguments ||= []
+    end
+
+    def defaults
+      @defaults ||= {}
     end
 
     def required(*keys, **options)
@@ -33,6 +45,7 @@ module OptStruct
 
     def option_accessor(*keys, **options)
       check_reserved_words(keys)
+      defined_keys.concat keys
       option_reader *keys, **options
       option_writer *keys, **options
     end
@@ -52,19 +65,11 @@ module OptStruct
       end
     end
 
-    def defaults
-      @defaults ||= {}
-    end
-
     def expect_arguments(*arguments)
       required(*arguments)
       expected_arguments.concat(arguments)
     end
     alias_method :expect_argument, :expect_arguments
-
-    def expected_arguments
-      @expected_arguments ||= []
-    end
 
     def init(meth = nil, &blk)
       add_callback(:init, meth || blk)
