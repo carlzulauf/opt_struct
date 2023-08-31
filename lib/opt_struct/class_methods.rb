@@ -6,6 +6,7 @@ module OptStruct
         # copy them to the child class
         subclass.send(:instance_variable_set, ivar, instance_variable_get(ivar).dup)
       end
+      super(subclass)
     end
 
     def defined_keys
