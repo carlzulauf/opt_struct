@@ -23,6 +23,7 @@ module OptStruct
       expect_arguments
     ).each do |class_method|
       define_method(class_method) do |*args, **options|
+        @_opt_structs ||= []
         @_opt_structs << [[], {}, -> { send(class_method, *args, **options) }]
       end
     end
