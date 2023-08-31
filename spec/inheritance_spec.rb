@@ -83,7 +83,49 @@ class SubchildExpectingBehavior < ChildExpectingInheritedBehavior
   option :still_opt_structed, default: -> { :yes }
 end
 
+$breaker = true
+
+class BaseClassWithInit
+  include OptStruct
+
+  option :opt1
+  init { self.opt1 = :value1 }
+end
+
+class Child1WithInit < BaseClassWithInit
+  option :opt2
+  init { self.opt2 = :value2 }
+end
+
+class Child2WithInit < BaseClassWithInit
+  option :opt3
+  init { self.opt3 = :value3 }
+end
+
 describe "inheritance" do
+  context "when inherited with stacking callbacks" do
+    let(:parent) { BaseClassWithInit.new }
+    let(:child1) { Child1WithInit.new }
+    let(:child2) { Child2WithInit.new }
+
+    it "parent only has opt1 and it's set" do
+      expect(parent.opt1).to eq(:value1)
+      expect(parent.respond_to?(:opt2)).to eq(false)
+      expect(parent.respond_to?(:opt3)).to eq(false)
+    end
+
+    it "child1 has opt1 and opt2 present, but not opt3" do
+      expect(child1.opt1).to eq(:value1)
+      expect(child1.opt2).to eq(:value2)
+      expect(child1.respond_to?(:opt3)).to eq(false)
+    end
+
+    it "child2 has opt1 and opt3 present, but not opt2" do
+      expect(child2.opt1).to eq(:value1)
+      expect(child2.respond_to?(:opt2)).to eq(false)
+      expect(child2.opt3).to eq(:value3)
+    end
+  end
   context "when included in a class expecting inherited behavior from parent" do
     let(:parent) { BaseClassWithInheritedHook }
     let(:child) { SubchildExpectingBehavior }
@@ -99,6 +141,7 @@ describe "inheritance" do
       expect(subject.still_opt_structed).to eq(:yes)
     end
   end
+
   context "with more options" do
     subject { WithMoreOptions }
 
