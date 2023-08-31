@@ -3,8 +3,15 @@ module OptStruct
     def inherited(subclass)
       # intersection of defined vars and the ones we care about
       (instance_variables & OptStruct::CLASS_IVARS).each do |ivar|
-        # copy them to the child class
-        subclass.send(:instance_variable_set, ivar, instance_variable_get(ivar).dup)
+        # copy each to the child class
+        value =
+          case ivar
+          when :@_callbacks # Hash that we need to duplicate deeper
+            instance_variable_get(ivar).transform_values(&:dup)
+          else
+            instance_variable_get(ivar).dup
+          end
+        subclass.send(:instance_variable_set, ivar, value)
       end
       super(subclass)
     end
