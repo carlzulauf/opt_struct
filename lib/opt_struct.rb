@@ -15,11 +15,15 @@ module OptStruct
   DEFAULT = Object.new
 
   def self._inject_struct(target, source, args = [], **defaults, &callback)
-    structs = Array(source.instance_variable_get(:@_opt_structs)).dup
+    existing = source.instance_variable_get(:@_opt_structs)
+    structs = Array(existing).dup
+
     if args.any? || defaults.any? || block_given?
       structs << [args, defaults, callback]
     end
-    target.instance_variable_set(:@_opt_structs, structs)
+
+    target.instance_variable_set(:@_opt_structs, structs) if existing || structs.any?
+
     if target.is_a?(Class)
       target.instance_exec do
         extend ClassMethods
