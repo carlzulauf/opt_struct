@@ -62,7 +62,43 @@ class StructWithIncluded
   end
 end
 
+class BaseClassWithInheritedHook
+  def self.inherited(child)
+    child.instance_variable_set(:@hook_ran, true)
+    child.define_method(:hook_ran?) { self.class.instance_variable_get(:@hook_ran) }
+  end
+end
+
+class ChildExpectingInheritedBehavior < BaseClassWithInheritedHook
+  include OptStruct
+
+  option :opt_structed, default: true
+
+  def call
+    hook_ran?
+  end
+end
+
+class SubchildExpectingBehavior < ChildExpectingInheritedBehavior
+  option :still_opt_structed, default: -> { :yes }
+end
+
 describe "inheritance" do
+  context "when included in a class expecting inherited behavior from parent" do
+    let(:parent) { BaseClassWithInheritedHook }
+    let(:child) { SubchildExpectingBehavior }
+
+    subject { child.new }
+
+    it "doesn't break the existing inherited behavior" do
+      expect(subject.()).to eq(true)
+    end
+
+    it "continues to behave like an opt struct" do
+      expect(subject.opt_structed).to eq(true)
+      expect(subject.still_opt_structed).to eq(:yes)
+    end
+  end
   context "with more options" do
     subject { WithMoreOptions }
 
