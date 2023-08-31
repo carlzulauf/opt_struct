@@ -1,9 +1,10 @@
 module OptStruct
   module ClassMethods
     def inherited(subclass)
-      instance_variables.each do |v|
-        ivar = instance_variable_get(v)
-        subclass.send(:instance_variable_set, v, ivar.dup) if ivar
+      # intersection of defined vars and the ones we care about
+      (instance_variables & OptStruct::CLASS_IVARS).each do |ivar|
+        # copy them to the child class
+        subclass.send(:instance_variable_set, ivar, instance_variable_get(ivar).dup)
       end
     end
 

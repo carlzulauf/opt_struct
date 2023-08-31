@@ -11,6 +11,12 @@ module OptStruct
     *OptStruct::InstanceMethods.private_instance_methods,
   ].freeze
 
+  # list of class instance variables defined/tracked by opt_struct
+  CLASS_IVARS = %i[
+    @defined_keys @required_keys @expected_arguments @defaults
+    @_callbacks @_opt_structs
+  ]
+
   # Default value object allows us to distinguish unspecified defaults from nil
   DEFAULT = Object.new
 
