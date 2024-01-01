@@ -6,6 +6,16 @@ class DefaultSymbolMethodExists < OptStruct.new
   end
 end
 
+class DefaultSymbolMethodPrivate < OptStruct.new
+  option :foo, default: :bar
+
+  private
+
+  def bar
+    "test"
+  end
+end
+
 class DefaultSymbolMethodDoesNotExist < OptStruct.new
   option :foo, default: :bar
 end
@@ -61,6 +71,11 @@ describe "OptStruct default values" do
     it "defaults to method return value when method exists" do
       expect(DefaultSymbolMethodExists.new.foo).to eq("test")
       expect(DefaultSymbolMethodExists.new.options[:foo]).to eq("test")
+    end
+
+    it "defaults to method return value when method is private" do
+      expect(DefaultSymbolMethodPrivate.new.foo).to eq("test")
+      expect(DefaultSymbolMethodPrivate.new.options[:foo]).to eq("test")
     end
 
     it "defaults to symbol if method does not exist" do

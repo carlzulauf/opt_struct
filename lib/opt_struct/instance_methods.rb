@@ -34,7 +34,7 @@ module OptStruct
           when Proc
             instance_exec(&default_value)
           when Symbol
-            respond_to?(default_value) ? send(default_value) : default_value
+            respond_to?(default_value, true) ? send(default_value) : default_value
           else
             default_value
           end
