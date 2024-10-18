@@ -1,8 +1,5 @@
 # The Opt Struct [![Build Status][travis-image]][travis-link]
 
-[travis-image]: https://travis-ci.org/carlzulauf/opt_struct.svg?branch=main
-[travis-link]: http://travis-ci.org/carlzulauf/opt_struct
-
 A struct around a hash. Great for encapsulating actions with complex configuration, like interactor/action classes.
 
 ```ruby
@@ -17,7 +14,7 @@ gem "opt_struct"
 class User < OptStruct.new
   required :email, :name
   option :role, default: "member"
-  
+
   def formatted_email
     %{"#{name}" <#{email}>}
   end
@@ -175,9 +172,9 @@ end
 class User < OptStruct.new
   option :email, nil
   option :role, -> { default_role }
-  
+
   private
-  
+
   def default_role
     "member"
   end
@@ -189,7 +186,7 @@ Default symbols are treated as method calls if the struct `#respond_to?` the met
 ```ruby
 class User < OptStruct.new
   options :email, :role => :default_role
-  
+
   def default_role
     "member"
   end
@@ -294,7 +291,7 @@ Feel free to write your own accessor methods for things like dependent options o
 class Person < OptStruct.new
   option :given_name
   option :family_name
-  
+
   def name
     options.fetch(:name) { "#{given_name} #{family_name}" }
   end
@@ -310,7 +307,7 @@ OptStruct classes are initialized in an `initialize` method (in `OptStruct::Inst
 ```ruby
 class UserReportBuilder < OptStruct.new(:user)
   attr_reader :report
-  
+
   def initialize(*)
     super
     @report = []
@@ -330,7 +327,7 @@ end
 ```ruby
 class UserReportBuilder < OptStruct.new(:user)
   attr_reader :report
-  
+
   around_init do |instance|
     instance.call
     @report = []
