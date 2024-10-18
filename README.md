@@ -153,7 +153,7 @@ Passing a Hash to `.new` or `.build` is equivalent to passing the same hash to `
 User = OptStruct.new(email: nil, role: "member")
 ```
 
-Default blocks can also be used and are late evaluated on the each struct instance.
+Default blocks can also be used and are late evaluated within the struct instance.
 
 ```ruby
 class User < OptStruct.new
@@ -265,7 +265,7 @@ end
 
 Expected arguments are similar to required arguments, except they are in `.expected_arguments` collection, which is checked when an OptStruct is initialized.
 
-Expected arguments can also be supplied using keywords. An `ArgumentError` is only raised if the expected argument is not in the list of arguments passed to `OptStruct#new` **and** the argument is not present in the `#options` Hash.
+Expected arguments can also be supplied using keywords. An `ArgumentError` is only raised if the expected argument is not in the list of arguments passed to `OptStruct#new` **and** the argument is not present in the optional Hash passed to `OptStruct#new`.
 
 The following examples will initialize any of the `User` class examples above without error.
 
@@ -315,7 +315,7 @@ class UserReportBuilder < OptStruct.new(:user)
 end
 ```
 
-`OptStruct` also provides initialization callbacks to make hooking into and customizing the initialization of OptStruct classes easier and require less code.
+`OptStruct` also provides initialization callbacks to make hooking into and customizing the initialization of OptStruct classes easier, less brittle, and require less code.
 
 ```ruby
 class UserReportBuilder < OptStruct.new(:user)
