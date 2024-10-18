@@ -1,4 +1,4 @@
-# The Opt Struct [![Build Status][travis-image]][travis-link]
+# The Opt Struct
 
 A struct around a hash. Great for encapsulating actions with complex configuration, like interactor/action classes.
 
