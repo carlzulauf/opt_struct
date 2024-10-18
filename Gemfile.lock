@@ -9,6 +9,7 @@ GEM
     coderay (1.1.3)
     diff-lcs (1.5.1)
     method_source (1.1.0)
+    ostruct (0.6.0)
     pry (0.14.2)
       coderay (~> 1.1)
       method_source (~> 1.0)
@@ -40,6 +41,7 @@ PLATFORMS
 
 DEPENDENCIES
   opt_struct!
+  ostruct
   pry
   rake
   rspec
