@@ -24,6 +24,9 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: ${{ matrix.ruby }}
+          # attempt to use default bundler for ruby version
+          # without this the version in Gemfile.lock is used, which is too new for ruby 2.7
+          bundler: default
       - name: Install dependencies
         run: bundle install
       - name: Run tests
