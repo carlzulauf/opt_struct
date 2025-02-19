@@ -72,4 +72,16 @@ describe "OptStruct instance methods usage" do
       expect { subject }.to raise_error(ArgumentError)
     end
   end
+
+  context "with comparable structs" do
+    let(:same) { InstanceableClass.new(arity_arg: "yaaa", required_arg: "yara", private_required_arg: "yeee") }
+    let(:different) { InstanceableClass.new(arity_arg: "naaa", required_arg: "nara", private_required_arg: "neee") }
+
+    it "compares as equal to struct with the same values" do
+      expect( subject == same ).to eq(true)
+    end
+    it "compares as not equal to struct with different values" do
+      expect( subject == different ).to eq(false)
+    end
+  end
 end
