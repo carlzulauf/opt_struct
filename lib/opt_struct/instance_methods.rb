@@ -17,6 +17,10 @@ module OptStruct
       self.class.defaults
     end
 
+    def ==(other)
+      options == other.options
+    end
+
     private
 
     def check_required_keys
