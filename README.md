@@ -345,3 +345,7 @@ Available callbacks
 ## Inheritance, Expanded
 
 See `spec/inheritance_spec.rb` for examples of just how crazy you can get.
+
+## Ruby Versions
+
+This gem is expected to work with rubies as old as ~2.0, though official support and automated testing only covers non-EOL (End of Life) versions. Currently, that's ruby 3.3+. Tests are also performed against jruby and truffleruby to ensure portability.
