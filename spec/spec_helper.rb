@@ -1,6 +1,10 @@
 require "bundler/setup"
-require "pry"
 require "opt_struct"
+
+# Part of the development bundle. Ignore if we don't find.
+begin
+  require "pry"
+rescue LoadError; end
 
 RSpec.configure do |config|
   config.expect_with(:rspec) { |c| c.syntax = :expect }
