@@ -24,6 +24,20 @@ class DefaultProc < OptStruct.new
   option :foo, default: -> { "bar" }
 end
 
+class DefaultSymbolToProcAsBlock < OptStruct.new
+  option :foo, &:bar
+
+  def bar
+    "bar"
+  end
+end
+
+class DefaultBlock < OptStruct.new
+  option(:foo) { bar }
+
+  def bar = "bar"
+end
+
 class DefaultLambda < OptStruct.new
   option :foo, default: lambda { "bar" }
 end
@@ -114,6 +128,15 @@ describe "OptStruct default values" do
       expect(instance.foo).to eq(value)
       expect(instance.fetch(:foo)).to eq(value)
       expect(instance.options[:foo]).to eq(value)
+    end
+
+    it "allows proc to be passed as a block" do
+      expect(DefaultSymbolToProcAsBlock.new.foo).to eq("bar")
+      expect(DefaultSymbolToProcAsBlock.new.options[:foo]).to eq("bar")
+    end
+
+    it "allows default blocks" do
+      expect(DefaultBlock.new.foo).to eq("bar")
     end
 
     context "with a nil return value" do

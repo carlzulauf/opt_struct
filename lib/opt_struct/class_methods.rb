@@ -59,9 +59,14 @@ module OptStruct
       option_writer *keys, **options
     end
 
-    def option(key, default = OptStruct::DEFAULT, required: false, **options)
-      default = options[:default] if options.key?(:default)
-      defaults[key] = default unless default == OptStruct::DEFAULT
+    def option(key, default = OptStruct::DEFAULT, required: false, **options, &default_block)
+      if options.key?(:default)
+        defaults[key] = options[:default]
+      elsif default != OptStruct::DEFAULT
+        defaults[key] = default
+      elsif default_block
+        defaults[key] = default_block
+      end
       required_keys << key if required
       option_accessor key, **options
     end
