@@ -16,7 +16,7 @@ jobs:
 
     strategy:
       matrix:
-        ruby: ['3.3', '3.4', head, jruby, truffleruby]
+        ruby: ['3.3', '3.4', "4.0", jruby, truffleruby]
 
     steps:
       - uses: actions/checkout@v4
