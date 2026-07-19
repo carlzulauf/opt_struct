@@ -36,7 +36,11 @@ module OptStruct
         options[key] =
           case default_value
           when Proc
-            instance_exec(&default_value)
+            if default_value.arity == 0
+              instance_exec(&default_value)
+            else
+              instance_exec(self, &default_value)
+            end
           when Symbol
             respond_to?(default_value, true) ? send(default_value) : default_value
           else

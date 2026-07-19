@@ -83,8 +83,6 @@ class SubchildExpectingBehavior < ChildExpectingInheritedBehavior
   option :still_opt_structed, default: -> { :yes }
 end
 
-$breaker = true
-
 class BaseClassWithInit
   include OptStruct
 

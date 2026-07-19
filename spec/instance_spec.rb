@@ -68,7 +68,6 @@ describe "OptStruct instance methods usage" do
     subject { InstanceableClass.new(arity_arg: 1, private_required_arg: 1) }
 
     it "raises an ArgumentError" do
-      # binding.pry
       expect { subject }.to raise_error(ArgumentError)
     end
   end
